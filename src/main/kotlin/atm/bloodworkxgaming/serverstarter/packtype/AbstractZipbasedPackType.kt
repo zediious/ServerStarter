@@ -18,17 +18,19 @@ abstract class AbstractZipbasedPackType(private val configFile: ConfigFile, prot
             File(basePath).mkdirs()
 
             try {
-                val patterns = configFile.install.ignoreFiles
-                        .map {
-                            val s = if (it.startsWith("glob:") || it.startsWith("regex:"))
-                                it
-                            else
-                                "glob:$it"
+                if(configFile.install.installPack) {
+                    val patterns = configFile.install.ignoreFiles
+                            .map {
+                                val s = if (it.startsWith("glob:") || it.startsWith("regex:"))
+                                    it
+                                else
+                                    "glob:$it"
 
-                            FileSystems.getDefault().getPathMatcher(s)
-                        }
+                                FileSystems.getDefault().getPathMatcher(s)
+                            }
 
-                handleZip(obtainZipFile(url), patterns)
+                    handleZip(obtainZipFile(url), patterns)
+                }
                 postProcessing()
             } catch (e: IOException) {
                 ServerStarter.LOGGER.error("Error while installing pack", e)
