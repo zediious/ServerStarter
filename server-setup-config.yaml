@@ -115,7 +115,8 @@ install:
   # Whether to install the Loader (Forge or Fabric) or not, should always be true unless you only want to install the pack
   installLoader: true
 
-  #Whether to install the Pack from supplied link or zipfile or just run an already installed pack will download mods depending on modpackformat
+  # Whether to install the Pack from supplied link or zipfile or just run an already installed pack
+  # Will download mods depending on modpackformat
   installPack: true
 
   # Sponge bootstrapper jar URL
