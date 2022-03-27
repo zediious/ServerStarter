@@ -116,7 +116,7 @@ install:
   installLoader: true
 
   # Whether to install the Pack from supplied link or zipfile or just run an already installed pack
-  # Will download mods depending on modpackformat
+  # Will download mods from manifest or minecraftinstance.json depending on modpackformat
   installPack: true
 
   # Sponge bootstrapper jar URL

@@ -13,28 +13,25 @@ abstract class AbstractZipbasedPackType(private val configFile: ConfigFile, prot
     protected val basePath = configFile.install.baseInstallPath
 
     override fun installPack() {
-        if (configFile.install.modpackUrl.isNotEmpty()) {
-            val url = configFile.install.modpackUrl
-            File(basePath).mkdirs()
+        try {
+            if (configFile.install.installPack && configFile.install.modpackUrl.isNotEmpty()) {
+                val url = configFile.install.modpackUrl
+                File(basePath).mkdirs()
+                val patterns = configFile.install.ignoreFiles
+                        .map {
+                            val s = if (it.startsWith("glob:") || it.startsWith("regex:"))
+                                it
+                            else
+                                "glob:$it"
 
-            try {
-                if(configFile.install.installPack) {
-                    val patterns = configFile.install.ignoreFiles
-                            .map {
-                                val s = if (it.startsWith("glob:") || it.startsWith("regex:"))
-                                    it
-                                else
-                                    "glob:$it"
+                            FileSystems.getDefault().getPathMatcher(s)
+                        }
 
-                                FileSystems.getDefault().getPathMatcher(s)
-                            }
-
-                    handleZip(obtainZipFile(url), patterns)
-                }
-                postProcessing()
-            } catch (e: IOException) {
-                ServerStarter.LOGGER.error("Error while installing pack", e)
+                handleZip(obtainZipFile(url), patterns)
             }
+            postProcessing()
+        } catch (e: IOException) {
+            ServerStarter.LOGGER.error("Error while installing pack", e)
         }
     }
 
