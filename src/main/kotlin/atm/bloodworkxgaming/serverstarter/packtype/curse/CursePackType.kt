@@ -161,7 +161,8 @@ open class CursePackType(private val configFile: ConfigFile, internetManager: In
                     val obj = jsonElement.asJsonObject
                     mods.add(ModEntryRaw(
                             obj.getAsJsonPrimitive("projectID").asString,
-                            obj.getAsJsonPrimitive("fileID").asString))
+                            obj.getAsJsonPrimitive("fileID").asString,
+                            obj.getAsJsonPrimitive("downloadUrl")?.asString ?: ""))
                 }
             } else {
                 val mcObj = json.getAsJsonObject("baseModLoader")
@@ -176,7 +177,9 @@ open class CursePackType(private val configFile: ConfigFile, internetManager: In
                     val obj = jsonElement.asJsonObject
                     val projectID = obj.getAsJsonPrimitive("addonID").asString
                     val fileID = obj.getAsJsonObject("installedFile").getAsJsonPrimitive("id").asString
-                    mods.add(ModEntryRaw(projectID,fileID))
+                    val downloadUrl = obj.getAsJsonObject("installedFile").getAsJsonPrimitive("downloadUrl").asString
+
+                    mods.add(ModEntryRaw(projectID,fileID,downloadUrl))
                 }
             }
 
@@ -212,6 +215,11 @@ open class CursePackType(private val configFile: ConfigFile, internetManager: In
         mods.parallelStream().forEach { mod ->
             if (ignoreSet.isNotEmpty() && ignoreSet.contains(mod.projectID)) {
                 LOGGER.info("Skipping mod with projectID: " + mod.projectID)
+                return@forEach
+            }
+
+            if (mod.downloadUrl.isNotEmpty()) {
+                urls.add(mod.downloadUrl)
                 return@forEach
             }
 
@@ -316,4 +324,4 @@ open class CursePackType(private val configFile: ConfigFile, internetManager: In
 /**
  * Data class to keep projectID and fileID together
  */
-data class ModEntryRaw(val projectID: String, val fileID: String)
+data class ModEntryRaw(val projectID: String, val fileID: String, val downloadUrl: String)
